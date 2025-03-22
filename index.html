@@ -4,7 +4,6 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Pedidos Club Aleman Frutillar</title>
-  <!-- Librería para exportar a Excel -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
   <style>
     body {
@@ -93,6 +92,16 @@
       background-color: #4CAF50;
       color: white;
     }
+    
+    /* Nuevos estilos para cantidad */
+    input[type="number"]::-webkit-outer-spin-button,
+    input[type="number"]::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+    input[type="number"] {
+      -moz-appearance: textfield;
+    }
   </style>
 </head>
 
@@ -103,13 +112,13 @@
     <!-- Fecha -->
     <div class="form-group">
       <label for="fecha">Fecha:</label>
-      <input type="date" id="fecha" />
+      <input type="date" id="fecha" required />
     </div>
 
     <!-- Encargado -->
     <div class="form-group">
       <label for="encargado">Encargado:</label>
-      <input type="text" id="encargado" placeholder="Nombre del encargado" />
+      <input type="text" id="encargado" placeholder="Nombre del encargado" required />
     </div>
 
     <!-- Área -->
@@ -123,6 +132,8 @@
         <option value="Barra">Barra</option>
         <option value="Administración">Administración</option>
         <option value="Parrilla">Parrilla</option>
+        <option value="Salon Club">Salon Club</option>
+        <option value="Salon Boliche">Salon Boliche</option>
       </select>
     </div>
 
@@ -131,7 +142,7 @@
     <!-- WhatsApp -->
     <div class="form-group">
       <label for="whatsapp">WhatsApp:</label>
-      <input type="text" id="whatsapp" placeholder="Ej: +56912345678" />
+      <input type="text" id="whatsapp" placeholder="Ej: +56912345678" required />
     </div>
 
     <!-- Buscador dinámico -->
@@ -143,14 +154,25 @@
         placeholder="Ingrese nombre o código"
         onkeyup="mostrarSugerencias()"
         onclick="mostrarSugerencias()"
+        autocomplete="off"
       />
       <div id="sugerencias" class="autocomplete-suggestions"></div>
     </div>
 
-    <!-- Cantidad -->
+    <!-- Cantidad mejorada -->
     <div class="form-group">
       <label for="cantidad">Cantidad:</label>
-      <input type="number" id="cantidad" min="1" value="1" />
+      <input 
+        type="number" 
+        id="cantidad" 
+        min="1" 
+        value="1"
+        inputmode="numeric"
+        pattern="[0-9]*"
+        step="1"
+        placeholder="Ej: 5"
+        required
+      />
     </div>
 
     <!-- Botón Agregar -->
@@ -179,9 +201,9 @@
   </div>
 
   <script>
-    // Lista de productos de prueba
+    // Lista de productos actualizada
     const productosLista = [
-    { codigo: "ABA100001", nombre: "1865 Carmenere" },
+      { codigo: "ABA100001", nombre: "1865 Carmenere" },
 { codigo: "ABA100030", nombre: "AA" },
 { codigo: "POR100582", nombre: "Absolut mango" },
 { codigo: "ABA100002", nombre: "ACEITE MAXIFRITS B 10 L" },
@@ -317,8 +339,6 @@
 { codigo: "ABA100120", nombre: "CLAVO DE OLOR 1K" },
 { codigo: "ABA100121", nombre: "CLORO Concentrado" },
 { codigo: "ABA100123", nombre: "CLORO GEL" },
-{ codigo: "ABA100122", nombre: "CLORO GEL 1500ML" },
-{ codigo: "ABA100124", nombre: "CLORO IMPEKE 1L" },
 { codigo: "ABA100125", nombre: "CO2 cilindro SCHOP" },
 { codigo: "ABA100126", nombre: "COCA LIGTH" },
 { codigo: "ABA100127", nombre: "COCA NORMAL" },
@@ -483,7 +503,7 @@
 { codigo: "CNG100262", nombre: "Malaya Prolijada de Cerdo" },
 { codigo: "CNG100263", nombre: "MANJAR COLUN 1K" },
 { codigo: "CNG100264", nombre: "MANJAR NESTLE 1K" },
-{ codigo: "CNG100265", nombre: "MANLAC PLATA PACK 3U" },
+{ codigo: "CNG100265", nombre: "VIRUTILLA GRUESA OLLA 3/U (MANLAC PLATA PACK 3U)" },
 { codigo: "CNG100266", nombre: "MANT. COLUN 250" },
 { codigo: "CNG100267", nombre: "MANTENCION Y REPARACION" },
 { codigo: "POR100522", nombre: "MANTEQUILLA COLUN 250G" },
@@ -723,7 +743,7 @@
 { codigo: "MEN100460", nombre: "TEABAG MIXED BERRIES 6X20 FOIL ENV" },
 { codigo: "MEN100461", nombre: "Tequila Olmeca" },
 { codigo: "MEN100462", nombre: "Terra Noble Chardonay" },
-{ codigo: "MEN100464", nombre: "TOALLA MANO 6X150 H1" },
+{ codigo: "MEN100464", nombre: "TOALLA MANO PITUTO AZUL 6X150 H1" },
 { codigo: "PSC100465", nombre: "TOALLITAS DESINFECTANTES" },
 { codigo: "PSC100466", nombre: "TOCINO AHUMADO LAMINADO" },
 { codigo: "PSC100467", nombre: "TOCINO MOLIDO" },
@@ -754,7 +774,6 @@
 { codigo: "POR100489", nombre: "Viña Mar Brut 375cc" },
 { codigo: "POR100490", nombre: "Viña Mar Brut 750cc" },
 { codigo: "POR100491", nombre: "Viña Mar Zero 750" },
-{ codigo: "POR100492", nombre: "VIRUTILLA FINA OLLA" },
 { codigo: "POR100493", nombre: "VIU MANENT ESTATE CARMENERE" },
 { codigo: "POR100494", nombre: "VIU MANENT ESTATE RESERVA CHARDONNAY" },
 { codigo: "POR100495", nombre: "Viu Manent Gran Reserva Carmenere" },
@@ -818,17 +837,17 @@
 { codigo: "POR101002", nombre: "RALLADOR" },
 { codigo: "POR101003", nombre: "SOBRECOSTILLA" },
 { codigo: "POR101004", nombre: "CHISPERO" },
-{ codigo: "POR101005", nombre: "BALANZA COCINA" },
 { codigo: "POR101006", nombre: "GUANTES vinillo (M)" },
 { codigo: "POR101007", nombre: "GUANTES vinillo (L)" },
+{ codigo: "POR101005", nombre: "BALANZA COCINA" },
+{ codigo: "AI1100183", nombre: "GUANTES vinillo (M)" },
+{ codigo: "AI1100183", nombre: "GUANTES vinillo (S)" }
 
 
     ];
 
-    // Variable para almacenar la selección actual del usuario
     let productoSeleccionado = null;
 
-    // Función para mostrar sugerencias de productos
     function mostrarSugerencias() {
       const input = document.getElementById("search").value.toLowerCase();
       const sugerenciasDiv = document.getElementById("sugerencias");
@@ -839,70 +858,72 @@
       }
 
       const resultados = productosLista
-        .filter(
-          (p) =>
-            p.codigo.toLowerCase().includes(input) ||
-            p.nombre.toLowerCase().includes(input)
+        .filter(p => 
+          p.codigo.toLowerCase().includes(input) ||
+          p.nombre.toLowerCase().includes(input)
         )
         .slice(0, 10);
 
-      // Generar HTML de sugerencias
       sugerenciasDiv.innerHTML = resultados
-        .map(
-          (p) => `
-            <div class="autocomplete-suggestion" onclick="seleccionarProducto('${p.codigo}')">
-              ${p.codigo} - ${p.nombre}
-            </div>`
-        )
+        .map(p => `
+          <div class="autocomplete-suggestion" onclick="seleccionarProducto('${p.codigo}')">
+            ${p.codigo} - ${p.nombre}
+          </div>`)
         .join("");
 
-      sugerenciasDiv.style.display = "block";
+      sugerenciasDiv.style.display = resultados.length ? "block" : "none";
     }
 
-    // Seleccionar un producto de la lista de sugerencias
     function seleccionarProducto(codigo) {
-      productoSeleccionado = productosLista.find((p) => p.codigo === codigo);
+      productoSeleccionado = productosLista.find(p => p.codigo === codigo);
       document.getElementById("search").value = `${productoSeleccionado.codigo} - ${productoSeleccionado.nombre}`;
       document.getElementById("sugerencias").style.display = "none";
+      document.getElementById("cantidad").focus();
     }
 
-    // Agregar producto a la tabla
     function agregarProducto() {
-      if (!productoSeleccionado) {
-        alert("Seleccione un producto válido.");
-        return;
-      }
-      const cantidad = parseInt(document.getElementById("cantidad").value);
-      const tabla = document.getElementById("pedido");
+  if (!productoSeleccionado) {
+    alert("Seleccione un producto válido.");
+    return;
+  }
+  
+  const cantidadInput = document.getElementById("cantidad");
+  const cantidad = parseInt(cantidadInput.value);
+  
+  if (isNaN(cantidad) || cantidad < 1) {
+    alert("Ingrese una cantidad válida (mínimo 1)");
+    return;
+  }
 
-      // Crear fila de la tabla
-      let fila = document.createElement("tr");
-      fila.innerHTML = `
-        <td>${productoSeleccionado.codigo}</td>
-        <td>${productoSeleccionado.nombre}</td>
-        <td><input type="number" value="${cantidad}" min="1" /></td>
-        <td><button onclick="eliminarProducto(this)">Eliminar</button></td>
-      `;
+  const tabla = document.getElementById("pedido");
+  
+  const fila = document.createElement("tr");
+  fila.innerHTML = `
+    <td>${productoSeleccionado.codigo}</td>
+    <td>${productoSeleccionado.nombre}</td>
+    <td><input type="number" value="${cantidad}" min="1" class="cantidad-editable" /></td>
+    <td><button onclick="eliminarProducto(this)">Eliminar</button></td>
+  `;
 
-      tabla.appendChild(fila);
-      // Limpiar búsqueda
-      document.getElementById("search").value = "";
-      productoSeleccionado = null;
-    }
+  tabla.appendChild(fila);
+  
+  // Limpiar campos y resetear (MODIFICADO)
+  document.getElementById("search").value = "";
+  cantidadInput.value = ""; // Cambiado de "1" a vacío
+  productoSeleccionado = null;
+  document.getElementById("search").focus();
+}
 
-    // Eliminar una fila de la tabla
     function eliminarProducto(boton) {
-      boton.parentNode.parentNode.remove();
+      boton.closest("tr").remove();
     }
 
-    // Exportar el pedido a Excel y abrir WhatsApp con el mensaje
     function exportarYEnviarWhatsApp() {
-      let fecha = document.getElementById("fecha").value;
-      let encargado = document.getElementById("encargado").value || "Sin asignar";
-      let area = document.getElementById("area").value.replace(/\s+/g, '-');
-      let numeroWhatsApp = document.getElementById("whatsapp").value.trim();
-      let tabla = document.getElementById("pedido");
-      let filas = tabla.getElementsByTagName("tr");
+      const fecha = document.getElementById("fecha").value;
+      const encargado = document.getElementById("encargado").value || "Sin asignar";
+      const area = document.getElementById("area").value;
+      const numeroWhatsApp = document.getElementById("whatsapp").value.trim();
+      const filas = document.querySelectorAll("#pedido tr");
 
       if (filas.length === 0) {
         alert("No hay productos en el pedido.");
@@ -910,46 +931,46 @@
       }
 
       // Preparar datos para Excel
-      let datos = [
+      const datos = [
         ["Fecha", fecha],
         ["Encargado", encargado],
-        ["Área", area.replace(/-/g, ' ')],
+        ["Área", area],
         [],
         ["Código", "Nombre", "Cantidad"]
       ];
 
-      // Mensaje de WhatsApp con detalle
-      let mensajeWhatsApp = `📦 *Pedido del área ${area.replace(/-/g, ' ')}*\n` +
+      // Mensaje para WhatsApp
+      let mensajeWhatsApp = `📦 *Pedido del área ${area}*\n` +
                             `📅 Fecha: *${fecha}*\n` +
                             `👨‍🍳 Encargado: *${encargado}*\n\n` +
                             `📋 *Detalle del Pedido:*\n`;
 
-      // Recorrer filas de la tabla
-      for (let fila of filas) {
-        let celdas = fila.getElementsByTagName("td");
-        let codigo = celdas[0].textContent;
-        let nombre = celdas[1].textContent;
-        let cantidad = celdas[2].getElementsByTagName("input")[0].value;
+      filas.forEach(fila => {
+        const celdas = fila.querySelectorAll("td");
+        const codigo = celdas[0].textContent;
+        const nombre = celdas[1].textContent;
+        const cantidad = celdas[2].querySelector("input").value;
 
         datos.push([codigo, nombre, cantidad]);
         mensajeWhatsApp += `🔹 ${cantidad} x ${nombre} (${codigo})\n`;
-      }
+      });
 
-      // Crear libro y hoja de Excel
-      let wb = XLSX.utils.book_new();
-      let ws = XLSX.utils.aoa_to_sheet(datos);
+      // Crear archivo Excel
+      const wb = XLSX.utils.book_new();
+      const ws = XLSX.utils.aoa_to_sheet(datos);
       XLSX.utils.book_append_sheet(wb, ws, "Pedido");
+      XLSX.writeFile(wb, `Pedido_${fecha}_${area.replace(/ /g, '_')}.xlsx`);
 
-      // Nombre de archivo
-      let nombreArchivo = `Pedido_${fecha}_${area}.xlsx`;
-      XLSX.writeFile(wb, nombreArchivo);
-
-      // Abrir WhatsApp
+      // Enviar por WhatsApp
       if (numeroWhatsApp) {
-        let url = `https://wa.me/${numeroWhatsApp}?text=${encodeURIComponent(mensajeWhatsApp)}`;
+        const url = `https://wa.me/${numeroWhatsApp}?text=${encodeURIComponent(mensajeWhatsApp)}`;
         window.open(url, "_blank");
       }
     }
+
+    // Configuración inicial
+    document.getElementById("fecha").value = new Date().toISOString().split('T')[0];
+    document.getElementById("search").focus();
   </script>
 </body>
 </html>
